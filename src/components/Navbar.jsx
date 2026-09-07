@@ -35,12 +35,6 @@ export default function Navbar({ activePage, setActivePage }) {
 
         <div className="hidden items-center justify-end gap-4 md:flex">
           <div className="relative ml-20">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-            <input
-              type="search"
-              placeholder="Search"
-              className="w-40 rounded-full border border-neutral-300 bg-neutral-50 py-1.5 pl-8 pr-3 text-sm text-neutral-800 placeholder-neutral-400 outline-none focus:border-red-700 focus:ring-1 focus:ring-red-700 lg:w-56"
-            />
           </div>
           <button className="rounded-full bg-black px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:opacity-50">
             Subscribe
