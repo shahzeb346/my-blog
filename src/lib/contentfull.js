@@ -82,6 +82,26 @@ const resolveImageUrl = (fields, assetsById, imageKeys) => {
   return resolveAssetUrl(imageField);
 };
 
+const enrichRichTextAssets = (value, assetsById) => {
+  if (Array.isArray(value)) {
+    return value.map((item) => enrichRichTextAssets(item, assetsById));
+  }
+
+  if (!value || typeof value !== 'object') return value;
+
+  const enrichedValue = Object.fromEntries(
+    Object.entries(value).map(([key, entry]) => [key, enrichRichTextAssets(entry, assetsById)])
+  );
+  const targetId = value.data?.target?.sys?.id;
+  const asset = targetId ? assetsById.get(targetId) : undefined;
+
+  if (asset) {
+    enrichedValue.data = { ...enrichedValue.data, target: asset };
+  }
+
+  return enrichedValue;
+};
+
 const normalizeText = (value, fallback = '') => {
   if (typeof value === 'string') return value.trim() || fallback;
   if (typeof value === 'number' || typeof value === 'boolean') return String(value);
@@ -129,7 +149,7 @@ const buildEntry = (item, assetsById) => {
     title: String(title),
     category: String(category),
     summary: String(summary).trim(),
-    body: body,
+    body: enrichRichTextAssets(body, assetsById),
     publishedAt,
     imageUrl: resolveImageUrl(fields, assetsById),
     authorName: normalizeText(pickFirstValue(fields, ['authorName']), 'Editorial team'),

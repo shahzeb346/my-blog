@@ -1,9 +1,27 @@
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import { BLOCKS } from "@contentful/rich-text-types";
 
 const renderArticleBody = (body, fallback) => {
   if (!body) return fallback;
 
-  return typeof body === "object" ? documentToReactComponents(body) : body;
+  return typeof body === "object"
+    ? documentToReactComponents(body, {
+        renderNode: {
+          [BLOCKS.EMBEDDED_ASSET]: (node) => {
+            const file = node.data?.target?.fields?.file;
+            const imageUrl = file?.url ? (file.url.startsWith('//') ? `https:${file.url}` : file.url) : '';
+
+            return imageUrl ? (
+              <img
+                src={imageUrl}
+                alt={node.data?.target?.fields?.title || 'Article image'}
+                className="my-8 h-auto w-full rounded-md object-cover"
+              />
+            ) : null;
+          },
+        },
+      })
+    : body;
 };
 
 export default function Detail({ article, onBack }) {
